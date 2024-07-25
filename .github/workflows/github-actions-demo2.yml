@@ -1,4 +1,5 @@
 name: GitHub Actions Demo
+
 on:
   push:
     branches: [ main ]
@@ -11,18 +12,20 @@ on:
     inputs:
       environment:
         description: 'Environment to deploy to'
-        type: environment
+        type: string
         required: true
+
 jobs:
   Build:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🏗️ Building..."
+
   Test:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     needs: Build
-    environment: Test
+    environment: test
     steps:
       - run: echo "🧪 Testing..."
 
@@ -30,16 +33,17 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     needs: Build
-    environment: Load-Test
+    environment: load-test
     steps:
       - run: |
-          echo "🧪 Testing..."
+          echo "🧪 Load Testing..."
           sleep 15
+
   Production:
     runs-on: ubuntu-latest
     needs: [Test, Load-Test]
     environment:
-      name: Production
+      name: production
       url: https://writeabout.net
     if: github.event.inputs.environment == 'Production'
     steps:
